@@ -1,0 +1,12 @@
+# Visual Paradigm
+*.vpp.lck
+*.bak
+*.log
+*.tmp
+
+# Backup automatici
+*~
+
+# OS
+.DS_Store
+Thumbs.db
