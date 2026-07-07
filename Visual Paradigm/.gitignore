@@ -10,3 +10,5 @@
 # OS
 .DS_Store
 Thumbs.db
+*.vpp.bak_*
+.*.lck
