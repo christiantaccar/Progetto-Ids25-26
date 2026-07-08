@@ -5,6 +5,7 @@ import domain.models.Hackathon;
 import domain.models.HackathonData;
 import domain.models.MembroStaff;
 
+import java.util.List;
 import java.util.Objects;
 
 public class CreateHackathonController {
@@ -18,8 +19,7 @@ public class CreateHackathonController {
     public Hackathon createHackathon(MembroStaff organizzatore,
                                      HackathonData data,
                                      MembroStaff giudice,
-                                     MembroStaff mentore) {
-        // Nessuna logica qui — solo delega al service
-        return service.execute(organizzatore, data, giudice, mentore);
+                                     List<MembroStaff> mentori) {
+        return service.execute(organizzatore, data, giudice, mentori);
     }
 }

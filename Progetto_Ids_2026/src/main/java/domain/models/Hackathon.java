@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-
 public class Hackathon {
 
     private final UUID id;
@@ -70,24 +69,7 @@ public class Hackathon {
             stato = StatoHackathon.IN_VALUTAZIONE;
         }
     }
-    @ToDo
-    public void concludiHackathon(MembroStaff organizzatore){
-        if(organizzatore.isOrganizzatore()) this.stato = StatoHackathon.CONCLUSO;
-    }
 
-    // ========================
-    // AGGIORNAMENTO DATI (VALUE OBJECT)
-    // ========================
-    @ToDo
-    public void aggiornaDati(HackathonData nuoviDati) {
-        Objects.requireNonNull(nuoviDati);
-
-        if (stato != StatoHackathon.IN_ISCRIZIONE) {
-            throw new IllegalStateException("Non è possibile modificare i dati dopo l'inizio");
-        }
-
-        this.data = nuoviDati;
-    }
 
     // ========================
     // GETTER

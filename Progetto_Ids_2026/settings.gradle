@@ -1,4 +1,3 @@
 rootProject.name = 'Progetto_Ids_2026'
-include 'src:main:domain'
-findProject(':src:main:domain')?.name = 'domain'
+
 
