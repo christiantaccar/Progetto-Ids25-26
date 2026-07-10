@@ -14,9 +14,7 @@ public class AssegnaMentoriController {
         this.service = Objects.requireNonNull(service);
     }
 
-    public void assegnaMentore(MembroStaff organizzatore,
-                               UUID hackathonId,
-                               MembroStaff mentore) {
+    public void assegnaMentore(MembroStaff organizzatore, UUID hackathonId, MembroStaff mentore) {
         service.execute(organizzatore, hackathonId, mentore);
     }
 }

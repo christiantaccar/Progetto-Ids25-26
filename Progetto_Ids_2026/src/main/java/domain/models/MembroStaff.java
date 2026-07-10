@@ -41,4 +41,16 @@ public class MembroStaff {
     public boolean isMentore(){
         return ruolo == RuoloStaff.MENTORE;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MembroStaff)) return false;
+        MembroStaff that = (MembroStaff) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

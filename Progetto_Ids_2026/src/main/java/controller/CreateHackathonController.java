@@ -1,4 +1,4 @@
-package interfaces;
+package controller;
 
 import application.CreateHackathonService;
 import domain.models.Hackathon;
