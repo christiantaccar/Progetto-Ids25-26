@@ -9,7 +9,9 @@ import infrastructure.repository.InMemoryHackathonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +31,7 @@ class AssegnaMentoriServiceTest {
 
     @BeforeEach
     void setUp() {
-        repository = new InMemoryHackathonRepository();
+        repository = new InMemoryHackathonRepository(); // Clock reale di default
         createService = new CreateHackathonService(repository);
         assegnaService = new AssegnaMentoriService(repository);
 
@@ -100,12 +102,22 @@ class AssegnaMentoriServiceTest {
 
     @Test
     void rifiutaSeHackathonConcluso() {
-        Hackathon h = creaHackathon();
-        // Forziamo lo stato a CONCLUSO simulando l'avanzamento del tempo,
-        // dato che il metodo concludiHackathon() è stato rimosso e va reintrodotto.
-        h.aggiornaStato(LocalDate.of(2026, 9, 10)); // dopo la data fine -> IN_VALUTAZIONE
+        // Repository con Clock "congelato" al 10 settembre 2026,
+        // cioè dopo la dataFine (3 settembre) -> stato IN_VALUTAZIONE
+        Clock clockFisso = Clock.fixed(
+                LocalDate.of(2026, 9, 10).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault()
+        );
+        HackathonRepository repoConTempoFisso = new InMemoryHackathonRepository(clockFisso);
+        CreateHackathonService createConTempoFisso = new CreateHackathonService(repoConTempoFisso);
+        AssegnaMentoriService assegnaConTempoFisso = new AssegnaMentoriService(repoConTempoFisso);
+
+        Hackathon h = createConTempoFisso.execute(organizzatore, datiValidi(), giudice, List.of(mentoreIniziale));
+
+        // Non serve più chiamare aggiornaStato() a mano:
+        // ogni findById/save attraverso questo repository userà il Clock fisso.
 
         assertThrows(IllegalStateException.class, () ->
-                assegnaService.execute(organizzatore, h.getId(), nuovoMentore));
+                assegnaConTempoFisso.execute(organizzatore, h.getId(), nuovoMentore));
     }
 }

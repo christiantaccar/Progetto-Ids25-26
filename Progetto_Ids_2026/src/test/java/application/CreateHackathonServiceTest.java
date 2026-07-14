@@ -1,6 +1,5 @@
 package application;
 
-import application.CreateHackathonService;
 import domain.enums.RuoloStaff;
 import domain.models.Hackathon;
 import domain.models.HackathonData;

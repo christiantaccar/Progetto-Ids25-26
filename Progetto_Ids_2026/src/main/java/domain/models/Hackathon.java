@@ -58,17 +58,18 @@ public class Hackathon {
         this.mentori.add(mentore);
     }
 //si può usare scheduler in SpringBoot
-    public void aggiornaStato(LocalDate oggi) {
-        Objects.requireNonNull(oggi);
-
-        if (oggi.isBefore(data.getDataInizio())) {
-            stato = StatoHackathon.IN_ISCRIZIONE;
-        } else if (!oggi.isAfter(data.getDataFine())) {
-            stato = StatoHackathon.IN_CORSO;
-        } else {
-            stato = StatoHackathon.IN_VALUTAZIONE;
-        }
+public void aggiornaStato(LocalDate oggi) {
+    if (stato == StatoHackathon.CONCLUSO) {
+        return; // stato finale, nessuna transizione automatica
     }
+    if (!oggi.isBefore(data.getDataFine())) {
+        stato = StatoHackathon.IN_VALUTAZIONE;
+    } else if (!oggi.isBefore(data.getDataInizio())) {
+        stato = StatoHackathon.IN_CORSO;
+    } else {
+        stato = StatoHackathon.IN_ISCRIZIONE;
+    }
+}
 
 
     // ========================
