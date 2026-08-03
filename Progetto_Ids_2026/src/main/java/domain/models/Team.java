@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import domain.enums.StatoHackathon;
+
 
 public class Team {
     private final UUID id;
     private String nome;
     private final Utente capoTeam;
     private final List<Utente> membri; // membri aggiuntivi, oltre al capo
+    private Hackathon hackathonAttuale; // null se non iscritto a nessun hackathon
 
     public Team(String nome, Utente capoTeam) {
         this.id = UUID.randomUUID();
@@ -36,10 +39,20 @@ public class Team {
         return List.copyOf(tutti);
     }
 
+    public boolean isIscrittoAdHackathonAttivo() {
+        return hackathonAttuale != null && hackathonAttuale.getStato() != StatoHackathon.CONCLUSO;
+    }
+
+    public void setHackathonAttuale(Hackathon hackathon) {
+        this.hackathonAttuale = hackathon;
+    }
+
+
     public UUID getId() { return id; }
     public String getNome() { return nome; }
     public Utente getCapoTeam() { return capoTeam; }
     public List<Utente> getMembri() { return List.copyOf(membri); }
+    public Hackathon getHackathonAttuale() { return hackathonAttuale; }
 
     @Override
     public boolean equals(Object o) {

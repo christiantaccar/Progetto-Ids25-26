@@ -16,6 +16,7 @@ public class Hackathon {
     private MembroStaff organizzatore;
     private MembroStaff giudice;
     private final List<MembroStaff> mentori;
+    private final List<Team> teamIscritti = new ArrayList<>();
 
     public Hackathon(UUID id, HackathonData data) {
         this.id = Objects.requireNonNull(id);
@@ -70,6 +71,16 @@ public void aggiornaStato(LocalDate oggi) {
         stato = StatoHackathon.IN_ISCRIZIONE;
     }
 }
+    public void iscriviTeam(Team team) {
+        Objects.requireNonNull(team, "Team non può essere null");
+        if (teamIscritti.size() >= data.getMaxteam()) {
+            throw new IllegalStateException("Numero massimo di team raggiunto");
+        }
+        if (teamIscritti.contains(team)) {
+            throw new IllegalArgumentException("Il team è già iscritto a questo hackathon");
+        }
+        teamIscritti.add(team);
+    }
 
 
     // ========================
@@ -100,6 +111,9 @@ public void aggiornaStato(LocalDate oggi) {
         return List.copyOf(mentori);
     }
 
+    public int getNumeroTeamIscritti() { return teamIscritti.size(); }
+
+    public List<Team> getTeamIscritti() { return List.copyOf(teamIscritti); }
     // ========================
     // UTILITY
     // ========================
