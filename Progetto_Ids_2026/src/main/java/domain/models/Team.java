@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import domain.enums.StatoHackathon;
 
 
 public class Team {
@@ -40,7 +39,7 @@ public class Team {
     }
 
     public boolean isIscrittoAdHackathonAttivo() {
-        return hackathonAttuale != null && hackathonAttuale.getStato() != StatoHackathon.CONCLUSO;
+        return hackathonAttuale != null && !hackathonAttuale.isConcluso();
     }
 
     public void setHackathonAttuale(Hackathon hackathon) {
@@ -53,11 +52,8 @@ public class Team {
     public Utente getCapoTeam() { return capoTeam; }
     public List<Utente> getMembri() { return List.copyOf(membri); }
     public Hackathon getHackathonAttuale() { return hackathonAttuale; }
+    public int getNumComponenti() { return membri.size() +1; }
 
-    public int getNumComponenti(){
-        return membri.size() + 1; 
-    }
-    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

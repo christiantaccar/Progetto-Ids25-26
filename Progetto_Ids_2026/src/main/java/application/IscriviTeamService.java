@@ -1,6 +1,5 @@
 package application;
 
-import domain.enums.StatoHackathon;
 import domain.models.Hackathon;
 import domain.models.Team;
 import domain.models.Utente;
@@ -40,7 +39,8 @@ public class IscriviTeamService {
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new IllegalArgumentException("Hackathon non trovato: " + hackathonId));
 
-        if (hackathon.getStato() != StatoHackathon.IN_ISCRIZIONE) {
+        // La decisione è delegata allo stato corrente dell'hackathon (pattern State)
+        if (!hackathon.puoIscrivereTeam()) {
             throw new IllegalStateException("Le iscrizioni non sono aperte per questo hackathon");
         }
 
@@ -49,7 +49,7 @@ public class IscriviTeamService {
             throw new IllegalStateException("Le iscrizioni per questo hackathon sono scadute");
         }
 
-        if (team.getNumComponenti() > hackathon.getData().getMaxteam()) {
+        if (team.getNumComponenti() > hackathon.getData().getMaxTeam()) {
             throw new IllegalStateException("Numero limite di componenti del team superato");
         }
 

@@ -1,7 +1,6 @@
 package application;
 
 import domain.enums.RuoloStaff;
-import domain.enums.StatoHackathon;
 import domain.models.Hackathon;
 import domain.models.MembroStaff;
 import domain.repository.HackathonRepository;
@@ -35,10 +34,10 @@ public class AssegnaMentoriService {
             throw new IllegalArgumentException("Non autorizzato: non sei l'organizzatore di questo hackathon");
         }
 
-        // Non si possono aggiungere mentori a un hackathon già in valutazione o concluso
-        StatoHackathon stato = h.getStato();
-        if (stato == StatoHackathon.IN_VALUTAZIONE || stato == StatoHackathon.CONCLUSO) {
-            throw new IllegalStateException("Non è possibile assegnare mentori a un hackathon in stato " + stato);
+        // La decisione è delegata allo stato corrente dell'hackathon (pattern State)
+        if (!h.puoAggiungereMentori()) {
+            throw new IllegalStateException(
+                    "Non è possibile assegnare mentori a un hackathon in stato " + h.getStato());
         }
 
         // Evita di assegnare due volte lo stesso mentore

@@ -1,17 +1,24 @@
 package domain.models;
 
 import domain.enums.StatoHackathon;
+import domain.models.stato.StatiHackathon;
+import domain.models.stato.StatoHackathonState;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Context del design pattern STATE: delega allo stato corrente sia le
+ * transizioni sia la decisione su quali operazioni siano consentite.
+ */
 public class Hackathon {
 
     private final UUID id;
     private HackathonData data;
-    private StatoHackathon stato;
+    private StatoHackathonState stato;
 
     private MembroStaff organizzatore;
     private MembroStaff giudice;
@@ -21,7 +28,7 @@ public class Hackathon {
     public Hackathon(UUID id, HackathonData data) {
         this.id = Objects.requireNonNull(id);
         this.data = Objects.requireNonNull(data);
-        this.stato = StatoHackathon.IN_ISCRIZIONE;
+        this.stato = StatiHackathon.iniziale();
         this.mentori = new ArrayList<>();
     }
 
@@ -55,33 +62,63 @@ public class Hackathon {
         if (!mentore.isMentore()) {
             throw new IllegalArgumentException("Il membro non è un mentore");
         }
+        if (!stato.puoAggiungereMentori()) {
+            throw new IllegalStateException(
+                    "Non è possibile assegnare mentori a un hackathon in stato " + stato.tipo());
+        }
 
         this.mentori.add(mentore);
     }
-//si può usare scheduler in SpringBoot
-public void aggiornaStato(LocalDate oggi) {
-    if (stato == StatoHackathon.CONCLUSO) {
-        return; // stato finale, nessuna transizione automatica
+
+    /**
+     * Transizione automatica guidata dal tempo: delegata allo stato corrente.
+     * Con Spring Boot potrà essere invocata da uno scheduler.
+     */
+    public void aggiornaStato(LocalDate oggi) {
+        Objects.requireNonNull(oggi, "Data odierna obbligatoria");
+        this.stato = stato.prossimo(data, oggi);
     }
-    if (!oggi.isBefore(data.getDataFine())) {
-        stato = StatoHackathon.IN_VALUTAZIONE;
-    } else if (!oggi.isBefore(data.getDataInizio())) {
-        stato = StatoHackathon.IN_CORSO;
-    } else {
-        stato = StatoHackathon.IN_ISCRIZIONE;
-    }
-}
+
     public void iscriviTeam(Team team) {
         Objects.requireNonNull(team, "Team non può essere null");
-        if (teamIscritti.size() >= data.getMaxteam()) {
-            throw new IllegalStateException("Numero massimo di team raggiunto");
+        if (!stato.puoIscrivereTeam()) {
+            throw new IllegalStateException(
+                    "Le iscrizioni non sono aperte: hackathon in stato " + stato.tipo());
         }
+
         if (teamIscritti.contains(team)) {
             throw new IllegalArgumentException("Il team è già iscritto a questo hackathon");
         }
         teamIscritti.add(team);
     }
 
+    // ========================
+    // INTERROGAZIONI SULLO STATO (delegate allo State)
+    // ========================
+
+    public boolean puoIscrivereTeam() {
+        return stato.puoIscrivereTeam();
+    }
+
+    public boolean puoAggiungereMentori() {
+        return stato.puoAggiungereMentori();
+    }
+
+    public boolean puoRicevereSottomissioni() {
+        return stato.puoRicevereSottomissioni();
+    }
+
+    public boolean puoValutareSottomissioni() {
+        return stato.puoValutareSottomissioni();
+    }
+
+    public boolean puoProclamareVincitore() {
+        return stato.puoProclamareVincitore();
+    }
+
+    public boolean isConcluso() {
+        return stato.tipo() == StatoHackathon.CONCLUSO;
+    }
 
     // ========================
     // GETTER
@@ -95,7 +132,13 @@ public void aggiornaStato(LocalDate oggi) {
         return data;
     }
 
+    /** Enum dello stato corrente: usato per persistenza ed esposizione via API. */
     public StatoHackathon getStato() {
+        return stato.tipo();
+    }
+
+    /** Oggetto-stato corrente (pattern State). */
+    public StatoHackathonState getStatoCorrente() {
         return stato;
     }
 
@@ -111,9 +154,14 @@ public void aggiornaStato(LocalDate oggi) {
         return List.copyOf(mentori);
     }
 
-    public int getNumeroTeamIscritti() { return teamIscritti.size(); }
+    public int getNumeroTeamIscritti() {
+        return teamIscritti.size();
+    }
 
-    public List<Team> getTeamIscritti() { return List.copyOf(teamIscritti); }
+    public List<Team> getTeamIscritti() {
+        return List.copyOf(teamIscritti);
+    }
+
     // ========================
     // UTILITY
     // ========================

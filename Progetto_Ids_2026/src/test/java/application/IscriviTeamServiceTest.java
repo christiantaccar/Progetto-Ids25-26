@@ -115,15 +115,15 @@ class IscriviTeamServiceTest {
     }
 
     @Test
-    void rifiutaSeNumeroMassimoTeamRaggiunto() {
-        Hackathon h = creaHackathon(1); // massimo 1 team
-        Team teamA = creaTeam(capoTeam);
-        Utente capoTeamB = new Utente("Bowser", "bowser@test.it");
-        Team teamB = creaTeam(capoTeamB);
-
-        iscriviTeamService.execute(capoTeam, teamA.getId(), h.getId());
+    void rifiutaTeamTroppoGrande(){
+        Hackathon h1 = creaHackathon(2);
+        Team team = creaTeam(capoTeam);
+        Utente u1= new Utente("Mario","mari@gmail.com");
+        Utente u2= new Utente("Dario","dario@gmail.com");
+        team.aggiungiMembro(u1);
+        team.aggiungiMembro(u2);
 
         assertThrows(IllegalStateException.class, () ->
-                iscriviTeamService.execute(capoTeamB, teamB.getId(), h.getId()));
+                iscriviTeamService.execute(capoTeam, team.getId(), h1.getId()));
     }
 }

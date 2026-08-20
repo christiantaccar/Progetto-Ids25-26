@@ -31,7 +31,7 @@ public class HackathonData {
     public LocalDate getDataFine() { return dataFine; }
     public LocalDate getScadenzaIscrizioni() { return scadenzaIscrizioni; }
     public double getPremio() { return premio; }
-    public int getMaxteam() { return maxTeam; }
+    public int getMaxTeam() { return maxTeam; }
 
     @Override
     public String toString() {
