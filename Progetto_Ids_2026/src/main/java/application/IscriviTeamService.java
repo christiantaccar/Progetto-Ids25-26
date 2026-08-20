@@ -49,8 +49,8 @@ public class IscriviTeamService {
             throw new IllegalStateException("Le iscrizioni per questo hackathon sono scadute");
         }
 
-        if (hackathon.getNumeroTeamIscritti() >= hackathon.getData().getMaxteam()) {
-            throw new IllegalStateException("Numero massimo di team raggiunto per questo hackathon");
+        if (team.getNumComponenti() > hackathon.getData().getMaxteam()) {
+            throw new IllegalStateException("Numero limite di componenti del team superato");
         }
 
         hackathon.iscriviTeam(team);

@@ -54,6 +54,10 @@ public class Team {
     public List<Utente> getMembri() { return List.copyOf(membri); }
     public Hackathon getHackathonAttuale() { return hackathonAttuale; }
 
+    public int getNumComponenti(){
+        return membri.size() + 1; 
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
