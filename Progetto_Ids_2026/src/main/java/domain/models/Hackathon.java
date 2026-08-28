@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import domain.models.stato.Concluso;
 
 /**
  * Context del design pattern STATE: delega allo stato corrente sia le
@@ -24,6 +25,7 @@ public class Hackathon {
     private MembroStaff giudice;
     private final List<MembroStaff> mentori;
     private final List<Team> teamIscritti = new ArrayList<>();
+    private Team teamVincitore;
 
     public Hackathon(UUID id, HackathonData data) {
         this.id = Objects.requireNonNull(id);
@@ -92,6 +94,18 @@ public class Hackathon {
         teamIscritti.add(team);
     }
 
+        
+    public void concludi(Team vincitore) {
+        Objects.requireNonNull(vincitore, "Il team vincitore è obbligatorio");
+
+        if (!stato.puoProclamareVincitore()) {
+            throw new IllegalStateException(
+                    "Non è possibile proclamare un vincitore per un hackathon in stato " + stato.tipo());
+        }
+
+        this.teamVincitore = vincitore;
+        this.stato = new Concluso();
+    }
     // ========================
     // INTERROGAZIONI SULLO STATO (delegate allo State)
     // ========================
@@ -160,6 +174,10 @@ public class Hackathon {
 
     public List<Team> getTeamIscritti() {
         return List.copyOf(teamIscritti);
+    }
+
+    public Team getTeamVincitore(){
+        return teamVincitore;
     }
 
     // ========================

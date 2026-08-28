@@ -12,6 +12,7 @@ public class Team {
     private final Utente capoTeam;
     private final List<Utente> membri; // membri aggiuntivi, oltre al capo
     private Hackathon hackathonAttuale; // null se non iscritto a nessun hackathon
+    private Sottomissione sottomissioneAttuale;
 
     public Team(String nome, Utente capoTeam) {
         this.id = UUID.randomUUID();
@@ -46,13 +47,17 @@ public class Team {
         this.hackathonAttuale = hackathon;
     }
 
-
+    public void setSottomissioneAttuale(Sottomissione sottomissione){
+        this.sottomissioneAttuale=sottomissione;
+    }
+    
     public UUID getId() { return id; }
     public String getNome() { return nome; }
     public Utente getCapoTeam() { return capoTeam; }
     public List<Utente> getMembri() { return List.copyOf(membri); }
     public Hackathon getHackathonAttuale() { return hackathonAttuale; }
     public int getNumComponenti() { return membri.size() +1; }
+    public Sottomissione getSottomissioneAttuale(){ return sottomissioneAttuale; }
 
     @Override
     public boolean equals(Object o) {

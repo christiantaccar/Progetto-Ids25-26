@@ -72,4 +72,28 @@ class CreateHackathonServiceTest {
                         .maxTeam(10)
                         .build());
     }
+
+    @Test
+    void rifiutaListaMentoriVuota() {
+        HackathonRepository repo = new InMemoryHackathonRepository();
+        CreateHackathonService service = new CreateHackathonService(repo);
+
+        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                service.execute(organizzatore, datiValidi(), giudice, List.of()));
+    }
+
+    @Test
+        void rifiutaListaMentoriNulla() {
+        HackathonRepository repo = new InMemoryHackathonRepository();
+        CreateHackathonService service = new CreateHackathonService(repo);
+
+        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                service.execute(organizzatore, datiValidi(), giudice, null));
+    }
 }
