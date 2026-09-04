@@ -8,10 +8,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Credenziali di accesso di una persona registrata.
+ * Credenziali di accesso di una PersonaRegistrata.
  *
  * L'Account custodisce la password (sempre in forma cifrata) ed e' l'unico
- * responsabile della sua verifica: nessun altro oggetto deve poterla leggere.
+ * responsabile della sua verifica. L'email non e' duplicata qui: e' quella
+ * della persona, unica fonte di verita'.
  */
 public class Account {
 
@@ -22,32 +23,21 @@ public class Account {
     public static final Duration DURATA_BLOCCO = Duration.ofMinutes(15);
 
     private final UUID id;
-    private final String email;
-    private final Utente utente;
+    private final PersonaRegistrata persona;
 
     private String passwordCifrata;
     private boolean attivo;
     private int tentativiFalliti;
     private LocalDateTime bloccatoFino; // null se l'account non e' bloccato
 
-    public Account(String email, String passwordCifrata, Utente utente) {
+    public Account(String passwordCifrata, PersonaRegistrata persona) {
         this.id = UUID.randomUUID();
-        this.email = normalizza(Objects.requireNonNull(email, "Email obbligatoria"));
         this.passwordCifrata = Objects.requireNonNull(passwordCifrata, "Password cifrata obbligatoria");
-        this.utente = Objects.requireNonNull(utente, "Utente obbligatorio");
-
-        if (this.email.isBlank()) {
-            throw new IllegalArgumentException("L'email non puo' essere vuota");
-        }
+        this.persona = Objects.requireNonNull(persona, "Persona obbligatoria");
 
         this.attivo = true;
         this.tentativiFalliti = 0;
         this.bloccatoFino = null;
-    }
-
-    /** Normalizza un'email per il confronto: senza spazi e tutta minuscola. */
-    public static String normalizza(String email) {
-        return email.trim().toLowerCase();
     }
 
     /** Verifica la password senza mai esporre quella memorizzata. */
@@ -93,8 +83,11 @@ public class Account {
     }
 
     public UUID getId() { return id; }
-    public String getEmail() { return email; }
-    public Utente getUtente() { return utente; }
+    public PersonaRegistrata getPersona() { return persona; }
+
+    /** Email di accesso: e' quella della persona, non una copia. */
+    public String getEmail() { return persona.getEmail(); }
+
     public int getTentativiFalliti() { return tentativiFalliti; }
     public LocalDateTime getBloccatoFino() { return bloccatoFino; }
 

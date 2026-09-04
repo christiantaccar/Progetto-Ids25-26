@@ -17,7 +17,7 @@ class GestoreSessioneTest {
     void setUp() {
         GestoreSessione.reset();
         Utente utente = new Utente("Anna", "anna@test.it");
-        account = new Account("anna@test.it", CifratorePassword.cifra("password1"), utente);
+        account = new Account(CifratorePassword.cifra("password1"), utente);
     }
 
     @AfterEach

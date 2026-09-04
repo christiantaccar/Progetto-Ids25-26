@@ -25,10 +25,10 @@ class ConcludiHackathonServiceTest {
 
     @BeforeEach
     void setUp() {
-        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        altroOrganizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Wario");
-        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
+        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        altroOrganizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Wario", "wario@staff.test");
+        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
     }
 
     private HackathonData datiInValutazione() {

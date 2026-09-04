@@ -37,9 +37,9 @@ class InviaSottomissioneServiceTest {
         createHackathonService = new CreateHackathonService(hackathonRepository);
         inviaSottomissioneService = new InviaSottomissioneService(teamRepository, sottomissioneRepository);
 
-        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
+        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
     }
 
     private HackathonData datiValidi() {

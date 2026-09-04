@@ -1,6 +1,7 @@
 package controller;
 
 import application.RegistrazioneService;
+import domain.enums.RuoloStaff;
 import domain.models.Account;
 
 import java.util.Objects;
@@ -13,7 +14,11 @@ public class RegistrazioneController {
         this.service = Objects.requireNonNull(service);
     }
 
-    public Account registra(String nome, String email, String password) {
-        return service.execute(nome, email, password);
+    public Account registraPartecipante(String nome, String email, String password) {
+        return service.registraPartecipante(nome, email, password);
+    }
+
+    public Account registraMembroStaff(String nome, String email, String password, RuoloStaff ruolo) {
+        return service.registraMembroStaff(nome, email, password, ruolo);
     }
 }

@@ -1,6 +1,8 @@
 package application;
 
 import domain.models.Account;
+import domain.models.MembroStaff;
+import domain.models.PersonaRegistrata;
 import domain.models.Utente;
 
 import java.util.Objects;
@@ -13,6 +15,10 @@ import java.util.Optional;
  * istanza perche' esiste una sola sessione attiva per esecuzione: i controller
  * vi accedono per sapere chi sta agendo, invece di ricevere l'identita' come
  * parametro e doversi fidare del chiamante.
+ *
+ * L'istanza si ottiene con getInstance() nel solo punto di composizione
+ * dell'applicazione, che poi la passa a chi ne ha bisogno: la dipendenza
+ * resta esplicita e sostituibile nei test.
  */
 public class GestoreSessione {
 
@@ -59,9 +65,33 @@ public class GestoreSessione {
         return accountCorrente;
     }
 
-    /** Utente autenticato, richiesto come precondizione. */
+    /** Persona autenticata, qualunque sia il suo ruolo. */
+    public PersonaRegistrata richiediPersonaCorrente() {
+        return richiediAccountCorrente().getPersona();
+    }
+
+    /**
+     * Partecipante autenticato.
+     * @throws IllegalStateException se chi e' autenticato non e' un partecipante
+     */
     public Utente richiediUtenteCorrente() {
-        return richiediAccountCorrente().getUtente();
+        PersonaRegistrata persona = richiediPersonaCorrente();
+        if (!(persona instanceof Utente)) {
+            throw new IllegalStateException("Operazione riservata ai partecipanti");
+        }
+        return (Utente) persona;
+    }
+
+    /**
+     * Membro dello staff autenticato.
+     * @throws IllegalStateException se chi e' autenticato non fa parte dello staff
+     */
+    public MembroStaff richiediMembroStaffCorrente() {
+        PersonaRegistrata persona = richiediPersonaCorrente();
+        if (!(persona instanceof MembroStaff)) {
+            throw new IllegalStateException("Operazione riservata al personale");
+        }
+        return (MembroStaff) persona;
     }
 
     /**

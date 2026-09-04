@@ -35,11 +35,11 @@ class AssegnaMentoriServiceTest {
         createService = new CreateHackathonService(repository);
         assegnaService = new AssegnaMentoriService(repository);
 
-        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        altroOrganizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Wario");
-        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        mentoreIniziale = new MembroStaff(RuoloStaff.MENTORE, "Peach");
-        nuovoMentore = new MembroStaff(RuoloStaff.MENTORE, "Toad");
+        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        altroOrganizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Wario", "wario@staff.test");
+        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        mentoreIniziale = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
+        nuovoMentore = new MembroStaff(RuoloStaff.MENTORE, "Toad", "toad@staff.test");
     }
 
     private HackathonData datiValidi() {

@@ -36,9 +36,9 @@ class IscriviTeamServiceTest {
         creaTeamService = new CreaTeamService(teamRepository, new InvitaMembriService(new infrastructure.repository.InMemoryInvitoRepository()));
         iscriviTeamService = new IscriviTeamService(hackathonRepository, teamRepository);
 
-        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
+        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
         capoTeam = new Utente("Toad", "toad@test.it");
     }
 

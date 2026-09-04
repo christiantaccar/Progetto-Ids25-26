@@ -1,8 +1,12 @@
 package application;
 
+import domain.enums.RuoloStaff;
 import domain.models.Account;
+import domain.models.MembroStaff;
+import domain.models.PersonaRegistrata;
 import domain.models.Utente;
 import domain.repository.AccountRepository;
+import domain.repository.MembroStaffRepository;
 import domain.repository.UtenteRepository;
 import domain.security.CifratorePassword;
 
@@ -12,8 +16,15 @@ import java.util.regex.Pattern;
 /**
  * Caso d'uso "Effettuare registrazione".
  *
+ * Al momento della registrazione si sceglie una volta per tutte se l'account
+ * e' di un partecipante o di un membro dello staff: la natura della persona
+ * e' fissata dalla sua classe e non e' piu' modificabile in seguito.
+ *
+ * Le due varianti sono metodi distinti proprio per rendere impossibile una
+ * richiesta incoerente, come uno staff senza ruolo o un partecipante con uno.
+ *
  * Tutte le validazioni precedono la creazione degli oggetti: se una fallisce,
- * nessun Utente e nessun Account restano nei repository.
+ * nessuna persona e nessun Account restano nei repository.
  */
 public class RegistrazioneService {
 
@@ -25,13 +36,43 @@ public class RegistrazioneService {
 
     private final AccountRepository accountRepository;
     private final UtenteRepository utenteRepository;
+    private final MembroStaffRepository membroStaffRepository;
 
-    public RegistrazioneService(AccountRepository accountRepository, UtenteRepository utenteRepository) {
+    public RegistrazioneService(AccountRepository accountRepository,
+                                UtenteRepository utenteRepository,
+                                MembroStaffRepository membroStaffRepository) {
         this.accountRepository = Objects.requireNonNull(accountRepository);
         this.utenteRepository = Objects.requireNonNull(utenteRepository);
+        this.membroStaffRepository = Objects.requireNonNull(membroStaffRepository);
     }
 
-    public Account execute(String nome, String email, String password) {
+    /** Registra un partecipante: potra' creare team e iscriversi agli hackathon. */
+    public Account registraPartecipante(String nome, String email, String password) {
+        String passwordCifrata = validaECifra(nome, email, password);
+
+        Utente utente = new Utente(nome, PersonaRegistrata.normalizzaEmail(email));
+        utenteRepository.save(utente);
+
+        return creaAccount(passwordCifrata, utente);
+    }
+
+    /**
+     * Registra un membro dello staff con il ruolo indicato.
+     *
+     * Il ruolo dice che tipo di incarico potra' ricoprire; essere staff di uno
+     * specifico hackathon dipende poi dall'assegnazione fatta dall'organizzatore.
+     */
+    public Account registraMembroStaff(String nome, String email, String password, RuoloStaff ruolo) {
+        Objects.requireNonNull(ruolo, "Ruolo obbligatorio");
+        String passwordCifrata = validaECifra(nome, email, password);
+
+        MembroStaff membroStaff = new MembroStaff(ruolo, nome, PersonaRegistrata.normalizzaEmail(email));
+        membroStaffRepository.save(membroStaff);
+
+        return creaAccount(passwordCifrata, membroStaff);
+    }
+
+    private String validaECifra(String nome, String email, String password) {
         Objects.requireNonNull(nome, "Nome obbligatorio");
         Objects.requireNonNull(email, "Email obbligatoria");
         Objects.requireNonNull(password, "Password obbligatoria");
@@ -44,14 +85,12 @@ public class RegistrazioneService {
 
         validaRobustezza(password);
 
-        String passwordCifrata = CifratorePassword.cifra(password);
+        return CifratorePassword.cifra(password);
+    }
 
-        Utente utente = new Utente(nome, Account.normalizza(email));
-        utenteRepository.save(utente);
-
-        Account account = new Account(email, passwordCifrata, utente);
+    private Account creaAccount(String passwordCifrata, PersonaRegistrata persona) {
+        Account account = new Account(passwordCifrata, persona);
         accountRepository.save(account);
-
         return account;
     }
 

@@ -1,6 +1,7 @@
 package infrastructure.repository;
 
 import domain.models.Account;
+import domain.models.PersonaRegistrata;
 import domain.repository.AccountRepository;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class InMemoryAccountRepository implements AccountRepository {
         if (email == null) {
             return Optional.empty();
         }
-        String cercata = Account.normalizza(email);
+        String cercata = PersonaRegistrata.normalizzaEmail(email);
         return storage.values().stream()
                 .filter(a -> a.getEmail().equals(cercata))
                 .findFirst();

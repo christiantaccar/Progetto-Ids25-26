@@ -2,8 +2,10 @@ package application;
 
 import domain.models.Account;
 import domain.repository.AccountRepository;
+import domain.repository.MembroStaffRepository;
 import domain.repository.UtenteRepository;
 import infrastructure.repository.InMemoryAccountRepository;
+import infrastructure.repository.InMemoryMembroStaffRepository;
 import infrastructure.repository.InMemoryUtenteRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,7 @@ class EffettuaAccessoServiceTest {
 
     private AccountRepository accountRepository;
     private UtenteRepository utenteRepository;
+    private MembroStaffRepository membroStaffRepository;
     private RegistrazioneService registrazioneService;
     private EffettuaAccessoService service;
 
@@ -24,10 +27,11 @@ class EffettuaAccessoServiceTest {
 
         accountRepository = new InMemoryAccountRepository();
         utenteRepository = new InMemoryUtenteRepository();
-        registrazioneService = new RegistrazioneService(accountRepository, utenteRepository);
+        membroStaffRepository = new InMemoryMembroStaffRepository();
+        registrazioneService = new RegistrazioneService(accountRepository, utenteRepository, membroStaffRepository);
         service = new EffettuaAccessoService(accountRepository);
 
-        registrazioneService.execute("Anna", "anna@test.it", "password1");
+        registrazioneService.registraPartecipante("Anna", "anna@test.it", "password1");
     }
 
     @AfterEach

@@ -30,10 +30,10 @@ class VisualizzaSottomissioniServiceTest {
         createHackathonService = new CreateHackathonService(hackathonRepository);
         visualizzaSottomissioniService = new VisualizzaSottomissioniService(hackathonRepository);
 
-        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
-        estraneo = new MembroStaff(RuoloStaff.MENTORE, "Toad");
+        organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
+        estraneo = new MembroStaff(RuoloStaff.MENTORE, "Toad", "toad@staff.test");
     }
 
     private HackathonData datiValidi() {

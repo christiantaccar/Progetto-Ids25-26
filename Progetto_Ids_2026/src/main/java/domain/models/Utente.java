@@ -1,18 +1,14 @@
 package domain.models;
 
-import java.util.Objects;
-import java.util.UUID;
+/**
+ * Partecipante alla piattaforma: puo' far parte di un team alla volta.
+ */
+public class Utente extends PersonaRegistrata {
 
-public class Utente {
-    private final UUID id;
-    private final String nome;
-    private final String email;
     private Team teamAttuale; // null se non appartiene a nessun team
 
     public Utente(String nome, String email) {
-        this.id = UUID.randomUUID();
-        this.nome = Objects.requireNonNull(nome);
-        this.email = Objects.requireNonNull(email);
+        super(nome, email);
     }
 
     public boolean isInTeam() {
@@ -25,22 +21,5 @@ public class Utente {
 
     public Team getTeamAttuale() {
         return teamAttuale;
-    }
-
-    public UUID getId() { return id; }
-    public String getNome() { return nome; }
-    public String getEmail() { return email; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Utente)) return false;
-        Utente that = (Utente) o;
-        return id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 }

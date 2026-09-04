@@ -33,9 +33,9 @@ class CreateHackathonServiceTest {
         HackathonRepository repo = new InMemoryHackathonRepository();
         CreateHackathonService service = new CreateHackathonService(repo);
 
-        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        MembroStaff mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
+        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        MembroStaff mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
 
         Hackathon h = service.execute(organizzatore, datiValidi(), giudice, List.of(mentore));
 
@@ -50,9 +50,9 @@ class CreateHackathonServiceTest {
         HackathonRepository repo = new InMemoryHackathonRepository();
         CreateHackathonService service = new CreateHackathonService(repo);
 
-        MembroStaff nonOrganizzatore = new MembroStaff(RuoloStaff.GIUDICE, "Mario");
-        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
-        MembroStaff mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach");
+        MembroStaff nonOrganizzatore = new MembroStaff(RuoloStaff.GIUDICE, "Mario", "mario@staff.test");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
+        MembroStaff mentore = new MembroStaff(RuoloStaff.MENTORE, "Peach", "peach@staff.test");
 
         assertThrows(IllegalArgumentException.class, () ->
                 service.execute(nonOrganizzatore, datiValidi(), giudice, List.of(mentore)));
@@ -78,8 +78,8 @@ class CreateHackathonServiceTest {
         HackathonRepository repo = new InMemoryHackathonRepository();
         CreateHackathonService service = new CreateHackathonService(repo);
 
-        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
+        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
 
         assertThrows(IllegalArgumentException.class, () ->
                 service.execute(organizzatore, datiValidi(), giudice, List.of()));
@@ -90,8 +90,8 @@ class CreateHackathonServiceTest {
         HackathonRepository repo = new InMemoryHackathonRepository();
         CreateHackathonService service = new CreateHackathonService(repo);
 
-        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario");
-        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi");
+        MembroStaff organizzatore = new MembroStaff(RuoloStaff.ORGANIZZATORE, "Mario", "mario@staff.test");
+        MembroStaff giudice = new MembroStaff(RuoloStaff.GIUDICE, "Luigi", "luigi@staff.test");
 
         assertThrows(IllegalArgumentException.class, () ->
                 service.execute(organizzatore, datiValidi(), giudice, null));
