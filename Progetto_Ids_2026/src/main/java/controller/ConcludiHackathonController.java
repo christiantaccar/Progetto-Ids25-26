@@ -15,9 +15,9 @@ public class ConcludiHackathonController {
         this.service = Objects.requireNonNull(service);
     }
 
-    public ConcludiHackathonService.RisultatoConclusione concludiHackathon(MembroStaff organizzatore,
+    public ConcludiHackathonService.RisultatoConclusione concludiHackathon(MembroStaff richiedente,
                                                                             UUID hackathonId,
                                                                             Team sceltaGiudiceInCasoDiParita) {
-        return service.execute(organizzatore, hackathonId, sceltaGiudiceInCasoDiParita);
+        return service.execute(richiedente, hackathonId, sceltaGiudiceInCasoDiParita);
     }
 }

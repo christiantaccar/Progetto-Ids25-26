@@ -32,17 +32,24 @@ public class ConcludiHackathonService {
         }
     }
 
-    public RisultatoConclusione execute(MembroStaff organizzatore, UUID hackathonId, Team sceltaGiudiceInCasoDiParita) {
-        Objects.requireNonNull(organizzatore, "Organizzatore obbligatorio");
-        Objects.requireNonNull(hackathonId, "Id hackathon obbligatorio");
+  public RisultatoConclusione execute(MembroStaff richiedente, UUID hackathonId, Team sceltaGiudiceInCasoDiParita) {
+    Objects.requireNonNull(richiedente, "Richiedente obbligatorio");
+    Objects.requireNonNull(hackathonId, "Id hackathon obbligatorio");
 
-        Hackathon hackathon = hackathonRepository.findById(hackathonId)
-                .orElseThrow(() -> new IllegalArgumentException("Hackathon non trovato: " + hackathonId));
+    Hackathon hackathon = hackathonRepository.findById(hackathonId)
+            .orElseThrow(() -> new IllegalArgumentException("Hackathon non trovato: " + hackathonId));
 
-        // Deve essere l'organizzatore proprietario di QUESTO hackathon
-        if (!organizzatore.equals(hackathon.getOrganizzatore())) {
+    if (sceltaGiudiceInCasoDiParita == null) {
+        // Prima chiamata: avvia la conclusione. Deve essere l'organizzatore proprietario di QUESTO hackathon.
+        if (!richiedente.equals(hackathon.getOrganizzatore())) {
             throw new IllegalArgumentException("Non autorizzato: non sei l'organizzatore di questo hackathon");
         }
+    } else {
+        // Seconda chiamata: risolve un pareggio. Deve essere il giudice di QUESTO hackathon.
+        if (!richiedente.equals(hackathon.getGiudice())) {
+            throw new IllegalArgumentException("Non autorizzato: non sei il giudice di questo hackathon");
+        }
+    }
 
         // La decisione è delegata allo stato corrente dell'hackathon (pattern State)
         if (!hackathon.puoProclamareVincitore()) {

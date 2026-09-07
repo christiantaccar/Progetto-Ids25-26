@@ -22,4 +22,10 @@ public class InMemoryTeamRepository implements TeamRepository {
     public Optional<Team> findById(UUID id) {
         return Optional.ofNullable(storage.get(id));
     }
+
+    @Override
+    public void delete(UUID id) {
+        Objects.requireNonNull(id);
+        storage.remove(id);
+    }
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Team {
     private final UUID id;
     private String nome;
-    private final Utente capoTeam;
+    private Utente capoTeam; // non più final: può cambiare se il capo lascia il team
     private final List<Utente> membri; // membri aggiuntivi, oltre al capo
     private Hackathon hackathonAttuale; // null se non iscritto a nessun hackathon
     private Sottomissione sottomissioneAttuale;
@@ -30,6 +30,39 @@ public class Team {
             throw new IllegalArgumentException("L'utente è già membro di questo team");
         }
         membri.add(utente);
+    }
+
+    /**
+     * Rimuove un membro (non il capo team) dal team.
+     * Usata sia da "Lasciare team" (il membro rimuove se stesso) sia da
+     * "Espellere componente" (il capo team rimuove un altro membro).
+     *
+     * @throws IllegalArgumentException se l'utente è il capo team o non è membro del team
+     */
+    public void rimuoviMembro(Utente utente) {
+        Objects.requireNonNull(utente, "Utente non può essere null");
+        if (utente.equals(capoTeam)) {
+            throw new IllegalArgumentException(
+                    "Il capo team non può essere rimosso con rimuoviMembro: usare promuoviCapoTeam prima di farlo uscire");
+        }
+        if (!membri.remove(utente)) {
+            throw new IllegalArgumentException("L'utente non è membro di questo team");
+        }
+    }
+
+    /**
+     * Promuove un membro esistente a nuovo capo team. Il capo uscente
+     * dovrà essere rimosso separatamente dal chiamante (non è più capo,
+     * ma va comunque tolto dal team).
+     *
+     * @throws IllegalArgumentException se il nuovo capo non è già membro del team
+     */
+    public void promuoviCapoTeam(Utente nuovoCapo) {
+        Objects.requireNonNull(nuovoCapo, "Nuovo capo team non può essere null");
+        if (!membri.remove(nuovoCapo)) {
+            throw new IllegalArgumentException("Il nuovo capo team deve essere un membro esistente del team");
+        }
+        this.capoTeam = nuovoCapo;
     }
 
     public List<Utente> getTuttiIMembri() {

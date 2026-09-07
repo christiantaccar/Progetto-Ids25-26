@@ -113,7 +113,7 @@ class ConcludiHackathonServiceTest {
 
         // Richiamando con la scelta esplicita del Giudice, la conclusione va a buon fine.
         ConcludiHackathonService.RisultatoConclusione risultatoFinale =
-                concludiService.execute(organizzatore, h.getId(), teamA);
+                concludiService.execute(giudice, h.getId(), teamA);
 
         assertFalse(risultatoFinale.richiedeSceltaGiudice);
         assertEquals(teamA, risultatoFinale.hackathon.getTeamVincitore());
@@ -167,4 +167,21 @@ class ConcludiHackathonServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 concludiService.execute(organizzatore, UUID.randomUUID(), null));
     }
+    @Test
+void rifiutaSeChiamanteNonGiudiceNellaSceltaDiParita() {
+    HackathonRepository repo = new InMemoryHackathonRepository(clockDopoLaFine());
+    CreateHackathonService createService = new CreateHackathonService(repo);
+    ProclamaVincitoreService proclamaService = new ProclamaVincitoreService(repo);
+    ConcludiHackathonService concludiService = new ConcludiHackathonService(repo, proclamaService);
+
+    Hackathon h = createService.execute(organizzatore, datiInValutazione(), giudice, List.of(mentore));
+    Team teamA = creaTeamConSottomissione(h, "TeamA", 90);
+    creaTeamConSottomissione(h, "TeamB", 90);
+
+    concludiService.execute(organizzatore, h.getId(), null); // avvia, rileva parità
+
+    // L'organizzatore non può risolvere il pareggio: serve il giudice.
+    assertThrows(IllegalArgumentException.class, () ->
+            concludiService.execute(organizzatore, h.getId(), teamA));
+}
 }
