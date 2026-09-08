@@ -11,6 +11,14 @@ import infrastructure.repository.InMemoryUtenteRepository;
 import application.CreateHackathonService;
 import domain.repository.HackathonRepository;
 import infrastructure.repository.InMemoryHackathonRepository;
+import application.InvitaMembriService;
+import application.CreaTeamService;
+import domain.repository.TeamRepository;
+import domain.repository.InvitoRepository;
+import infrastructure.repository.InMemoryTeamRepository;
+import infrastructure.repository.InMemoryInvitoRepository;
+import application.VisualizzaInvitiService;
+import application.UnisciTeamService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,5 +59,33 @@ public class AppConfig {
     @Bean
     public CreateHackathonService createHackathonService(HackathonRepository hackathonRepository) {
         return new CreateHackathonService(hackathonRepository);
+    }
+    @Bean
+    public TeamRepository teamRepository() {
+        return new InMemoryTeamRepository();
+    }
+
+    @Bean
+    public InvitoRepository invitoRepository() {
+        return new InMemoryInvitoRepository();
+    }
+
+    @Bean
+    public InvitaMembriService invitaMembriService(InvitoRepository invitoRepository) {
+        return new InvitaMembriService(invitoRepository);
+    }
+
+    @Bean
+    public CreaTeamService creaTeamService(TeamRepository teamRepository, InvitaMembriService invitaMembriService) {
+        return new CreaTeamService(teamRepository, invitaMembriService);
+    }
+    @Bean
+    public VisualizzaInvitiService visualizzaInvitiService(InvitoRepository invitoRepository) {
+        return new VisualizzaInvitiService(invitoRepository);
+    }
+
+    @Bean
+    public UnisciTeamService unisciTeamService(InvitoRepository invitoRepository, TeamRepository teamRepository) {
+        return new UnisciTeamService(invitoRepository, teamRepository);
     }
 }

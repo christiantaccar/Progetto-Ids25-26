@@ -3,11 +3,7 @@ package infrastructure.repository;
 import domain.models.Team;
 import domain.repository.TeamRepository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class InMemoryTeamRepository implements TeamRepository {
     private final Map<UUID, Team> storage = new HashMap<>();
@@ -27,5 +23,9 @@ public class InMemoryTeamRepository implements TeamRepository {
     public void delete(UUID id) {
         Objects.requireNonNull(id);
         storage.remove(id);
+    }
+    @Override
+    public List<Team> findAll(){
+        return List.copyOf(storage.values());
     }
 }

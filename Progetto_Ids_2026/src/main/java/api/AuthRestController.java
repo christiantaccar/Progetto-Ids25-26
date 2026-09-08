@@ -1,21 +1,21 @@
 package api;
 
-import api.dto.AccountResponse;
-import api.dto.LoginRequest;
-import api.dto.RegistrazionePartecipanteRequest;
+import api.dto.*;
 import application.EffettuaAccessoService;
 import application.RegistrazioneService;
 import domain.models.Account;
-import api.dto.MembroStaffResponse;
-import api.dto.RegistrazioneStaffRequest;
 import domain.enums.RuoloStaff;
 import domain.models.MembroStaff;
+import domain.repository.UtenteRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -23,11 +23,14 @@ public class AuthRestController {
 
     private final RegistrazioneService registrazioneService;
     private final EffettuaAccessoService effettuaAccessoService;
+    private final UtenteRepository utenteRepository;
 
     public AuthRestController(RegistrazioneService registrazioneService,
-                              EffettuaAccessoService effettuaAccessoService) {
+                              EffettuaAccessoService effettuaAccessoService,
+                              UtenteRepository utenteRepository) {
         this.registrazioneService = registrazioneService;
         this.effettuaAccessoService = effettuaAccessoService;
+        this.utenteRepository= utenteRepository;
     }
 
     @PostMapping("/registrazione/partecipante")
@@ -36,7 +39,7 @@ public class AuthRestController {
             Account account = registrazioneService.registraPartecipante(
                     req.nome(), req.email(), req.password());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new AccountResponse(account.getId(), account.getEmail()));
+                    .body(new UtenteResponse(account.getPersona().getId(), account.getPersona().getNome(), account.getEmail()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -65,5 +68,12 @@ public class AuthRestController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @GetMapping("/utenti")
+    public ResponseEntity<Object> elencoUtenti() {
+        List<UtenteResponse> elenco = utenteRepository.findAll().stream()
+                .map(u -> new UtenteResponse(u.getId(), u.getNome(), u.getEmail()))
+                .toList();
+        return ResponseEntity.ok(elenco);
     }
 }

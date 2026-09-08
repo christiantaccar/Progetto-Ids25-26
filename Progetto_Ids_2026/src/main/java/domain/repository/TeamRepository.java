@@ -1,6 +1,8 @@
 package domain.repository;
 
 import domain.models.Team;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +16,5 @@ public interface TeamRepository {
      * è quindi sciolto.
      */
     void delete(UUID id);
+    List<Team> findAll();
 }

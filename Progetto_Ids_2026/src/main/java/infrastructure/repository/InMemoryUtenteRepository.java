@@ -3,11 +3,7 @@ package infrastructure.repository;
 import domain.models.Utente;
 import domain.repository.UtenteRepository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class InMemoryUtenteRepository implements UtenteRepository {
 
@@ -23,4 +19,6 @@ public class InMemoryUtenteRepository implements UtenteRepository {
     public Optional<Utente> findById(UUID id) {
         return Optional.ofNullable(storage.get(id));
     }
+    @Override
+    public List<Utente> findAll() { return List.copyOf(storage.values()); }
 }
