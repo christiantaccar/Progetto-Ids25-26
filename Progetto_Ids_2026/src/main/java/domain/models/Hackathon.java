@@ -5,6 +5,7 @@ import domain.models.stato.StatiHackathon;
 import domain.models.stato.StatoHackathonState;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -76,9 +77,9 @@ public class Hackathon {
      * Transizione automatica guidata dal tempo: delegata allo stato corrente.
      * Con Spring Boot potrà essere invocata da uno scheduler.
      */
-    public void aggiornaStato(LocalDate oggi) {
-        Objects.requireNonNull(oggi, "Data odierna obbligatoria");
-        this.stato = stato.prossimo(data, oggi);
+    public void aggiornaStato(LocalDateTime adesso) {
+        Objects.requireNonNull(adesso, "Data/ora corrente obbligatoria");
+        this.stato = stato.prossimo(data, adesso);
     }
 
     public void iscriviTeam(Team team) {

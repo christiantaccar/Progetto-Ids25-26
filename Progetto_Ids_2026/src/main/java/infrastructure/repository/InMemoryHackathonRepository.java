@@ -5,6 +5,7 @@ import domain.repository.HackathonRepository;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryHackathonRepository implements HackathonRepository {
@@ -31,14 +32,14 @@ public class InMemoryHackathonRepository implements HackathonRepository {
         Objects.requireNonNull(id, "ID non può essere null");
         Hackathon h = storage.get(id);
         if (h != null) {
-            h.aggiornaStato(LocalDate.now(clock));
+            h.aggiornaStato(LocalDateTime.now(clock));
         }
         return Optional.ofNullable(h);
     }
 
     @Override
     public List<Hackathon> findAll() {
-        storage.values().forEach(h -> h.aggiornaStato(LocalDate.now(clock)));
+        storage.values().forEach(h -> h.aggiornaStato(LocalDateTime.now(clock)));
         return List.copyOf(storage.values());
     }
 }

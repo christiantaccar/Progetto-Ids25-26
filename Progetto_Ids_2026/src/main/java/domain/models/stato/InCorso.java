@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import domain.models.HackathonData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * L'hackathon e' iniziato: le iscrizioni sono chiuse, i team lavorano e
@@ -17,8 +18,8 @@ public final class InCorso implements StatoHackathonState {
     }
 
     @Override
-    public StatoHackathonState prossimo(HackathonData data, LocalDate oggi) {
-        if (!oggi.isBefore(data.getDataFine())) {
+    public StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso) {
+        if (!adesso.isBefore(data.getDataFine().atStartOfDay())) {
             return new InValutazione();
         }
         return this;

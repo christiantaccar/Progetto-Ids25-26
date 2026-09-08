@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import domain.models.HackathonData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Design Pattern STATE.
@@ -26,7 +27,7 @@ public interface StatoHackathonState {
      * Restituisce lo stato in cui l'hackathon deve trovarsi alla data indicata.
      * Se non c'e' transizione da fare, restituisce se stesso.
      */
-    StatoHackathonState prossimo(HackathonData data, LocalDate oggi);
+    StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso);
 
     boolean puoIscrivereTeam();
 

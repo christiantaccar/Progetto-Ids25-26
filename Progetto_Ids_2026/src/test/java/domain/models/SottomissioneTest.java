@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +20,7 @@ class SottomissioneTest {
                 .nome("Test")
                 .regolamento("Reg")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.of(2026, 9, 1))
+                .dataInizio(LocalDateTime.of(2026, 9, 1,0,0))
                 .dataFine(LocalDate.of(2026, 9, 3))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(0)

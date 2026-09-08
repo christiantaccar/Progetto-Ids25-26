@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import domain.models.HackathonData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Le iscrizioni sono aperte: i team possono iscriversi e l'Organizzatore
@@ -17,11 +18,11 @@ public final class InIscrizione implements StatoHackathonState {
     }
 
     @Override
-    public StatoHackathonState prossimo(HackathonData data, LocalDate oggi) {
-        if (!oggi.isBefore(data.getDataFine())) {
+    public StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso) {
+        if (!adesso.isBefore(data.getDataFine().atStartOfDay())) {
             return new InValutazione();
         }
-        if (!oggi.isBefore(data.getDataInizio())) {
+        if (!adesso.isBefore(data.getDataInizio())) {
             return new InCorso();
         }
         return this;

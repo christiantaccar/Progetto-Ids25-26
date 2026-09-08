@@ -1,6 +1,7 @@
 package api.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public record CreaHackathonRequest(
         String nome,
         String regolamento,
         String luogo,
-        LocalDate dataInizio,
+        LocalDateTime dataInizio,
         LocalDate dataFine,
         LocalDate scadenzaIscrizioni,
         double premio,

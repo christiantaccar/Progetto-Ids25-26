@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ class InviaSottomissioneServiceTest {
                 .nome("HackHub Test")
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.of(2026, 9, 1))
+                .dataInizio(LocalDateTime.of(2026, 9, 1,0,0))
                 .dataFine(LocalDate.of(2026, 9, 3))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(500.0)
@@ -66,7 +67,7 @@ class InviaSottomissioneServiceTest {
         team.setHackathonAttuale(h);
         teamRepository.save(team);
 
-        h.aggiornaStato(LocalDate.of(2026, 9, 2)); // forza la transizione a IN_CORSO (data tra inizio e fine)
+        h.aggiornaStato(LocalDateTime.of(2026, 9, 2,0,0)); // forza la transizione a IN_CORSO (data tra inizio e fine)
 
         return team;
     }

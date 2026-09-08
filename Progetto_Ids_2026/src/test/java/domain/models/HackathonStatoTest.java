@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,7 +15,7 @@ class HackathonStatoTest {
                 .nome("Test")
                 .regolamento("Reg")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.of(2026, 9, 1))
+                .dataInizio(LocalDateTime.of(2026, 9, 1, 0, 0))
                 .dataFine(LocalDate.of(2026, 9, 3))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(0)
@@ -25,28 +26,28 @@ class HackathonStatoTest {
     @Test
     void primaDellInizioRestaInIscrizione() {
         Hackathon h = new Hackathon(java.util.UUID.randomUUID(), datiValidi());
-        h.aggiornaStato(LocalDate.of(2026, 8, 30));
+        h.aggiornaStato(LocalDateTime.of(2026, 8, 30, 0, 0));
         assertEquals(StatoHackathon.IN_ISCRIZIONE, h.getStato());
     }
 
     @Test
     void dopoScadenzaIscrizioniMaPrimaInizioRestaInIscrizione() {
         Hackathon h = new Hackathon(java.util.UUID.randomUUID(), datiValidi());
-        h.aggiornaStato(LocalDate.of(2026, 8, 31)); // dopo scadenza (25/8), prima inizio (1/9)
+        h.aggiornaStato(LocalDateTime.of(2026, 8, 31, 0, 0)); // dopo scadenza (25/8), prima inizio (1/9)
         assertEquals(StatoHackathon.IN_ISCRIZIONE, h.getStato());
     }
 
     @Test
     void durantEventoDiventaInCorso() {
         Hackathon h = new Hackathon(java.util.UUID.randomUUID(), datiValidi());
-        h.aggiornaStato(LocalDate.of(2026, 9, 2));
+        h.aggiornaStato(LocalDateTime.of(2026, 9, 2, 0, 0));
         assertEquals(StatoHackathon.IN_CORSO, h.getStato());
     }
 
     @Test
     void dopoFineDiventaInValutazione() {
         Hackathon h = new Hackathon(java.util.UUID.randomUUID(), datiValidi());
-        h.aggiornaStato(LocalDate.of(2026, 9, 5));
+        h.aggiornaStato(LocalDateTime.of(2026, 9, 5, 0, 0));
         assertEquals(StatoHackathon.IN_VALUTAZIONE, h.getStato());
     }
 }

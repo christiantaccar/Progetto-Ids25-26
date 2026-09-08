@@ -2,34 +2,51 @@ package api;
 
 import api.dto.CreaHackathonRequest;
 import api.dto.HackathonResponse;
+import api.dto.IscriviTeamRequest;
+import api.dto.MembroStaffResponse;
 import application.CreateHackathonService;
+import application.IscriviTeamService;
 import domain.models.Hackathon;
-import domain.models.HackathonData;
 import domain.models.MembroStaff;
+import domain.models.Utente;
+import domain.repository.HackathonRepository;
 import domain.repository.MembroStaffRepository;
+import domain.repository.UtenteRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import api.dto.MembroStaffResponse;
-import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
 public class HackathonRestController {
 
     private final CreateHackathonService createHackathonService;
+    private final IscriviTeamService iscriviTeamService;
     private final MembroStaffRepository membroStaffRepository;
+    private final HackathonRepository hackathonRepository;
+    private final UtenteRepository utenteRepository;
 
     public HackathonRestController(CreateHackathonService createHackathonService,
-                                   MembroStaffRepository membroStaffRepository) {
+                                   IscriviTeamService iscriviTeamService,
+                                   MembroStaffRepository membroStaffRepository,
+                                   HackathonRepository hackathonRepository,
+                                   UtenteRepository utenteRepository) {
         this.createHackathonService = createHackathonService;
+        this.iscriviTeamService = iscriviTeamService;
         this.membroStaffRepository = membroStaffRepository;
+        this.hackathonRepository = hackathonRepository;
+        this.utenteRepository = utenteRepository;
     }
 
     @PostMapping("/hackathon")
@@ -41,7 +58,7 @@ public class HackathonRestController {
                     .map(this::trovaStaff)
                     .toList();
 
-            HackathonData data = HackathonData.builder()
+            domain.models.HackathonData data = domain.models.HackathonData.builder()
                     .nome(req.nome())
                     .regolamento(req.regolamento())
                     .luogo(req.luogo())
@@ -54,14 +71,7 @@ public class HackathonRestController {
 
             Hackathon h = createHackathonService.execute(organizzatore, data, giudice, mentori);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(new HackathonResponse(
-                    h.getId(),
-                    h.getData().getNome(),
-                    h.getStato().name(),
-                    h.getOrganizzatore().getEmail(),
-                    h.getGiudice().getEmail(),
-                    h.getMentori().stream().map(MembroStaff::getEmail).toList()
-            ));
+            return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(h));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (NoSuchElementException e) {
@@ -69,15 +79,48 @@ public class HackathonRestController {
         }
     }
 
-    private MembroStaff trovaStaff(java.util.UUID id) {
-        return membroStaffRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(id.toString()));
+    @GetMapping("/hackathon/{id}")
+    public ResponseEntity<Object> vediHackathon(@PathVariable UUID id) {
+        return hackathonRepository.findById(id)
+                .map(h -> ResponseEntity.ok((Object) toResponse(h)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hackathon non trovato: " + id));
     }
+
+    @PostMapping("/team/iscrivi")
+    public ResponseEntity<Object> iscriviTeam(@RequestBody IscriviTeamRequest req) {
+        try {
+            Utente richiedente = utenteRepository.findById(req.richiedenteId())
+                    .orElseThrow(() -> new NoSuchElementException(req.richiedenteId().toString()));
+            iscriviTeamService.execute(richiedente, req.teamId(), req.hackathonId());
+            return ResponseEntity.ok("Team iscritto con successo");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utente non trovato: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/staff")
     public ResponseEntity<Object> elencoStaff() {
         List<MembroStaffResponse> elenco = membroStaffRepository.findAll().stream()
                 .map(m -> new MembroStaffResponse(m.getId(), m.getNome(), m.getEmail(), m.getRuolo().name()))
                 .toList();
         return ResponseEntity.ok(elenco);
+    }
+
+    private MembroStaff trovaStaff(UUID id) {
+        return membroStaffRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(id.toString()));
+    }
+
+    private HackathonResponse toResponse(Hackathon h) {
+        return new HackathonResponse(
+                h.getId(),
+                h.getData().getNome(),
+                h.getStato().name(),
+                h.getOrganizzatore().getEmail(),
+                h.getGiudice().getEmail(),
+                h.getMentori().stream().map(MembroStaff::getEmail).toList()
+        );
     }
 }

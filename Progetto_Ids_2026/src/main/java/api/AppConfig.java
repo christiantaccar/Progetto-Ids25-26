@@ -1,24 +1,18 @@
 package api;
 
-import application.EffettuaAccessoService;
-import application.RegistrazioneService;
+import application.*;
 import domain.repository.AccountRepository;
 import domain.repository.MembroStaffRepository;
 import domain.repository.UtenteRepository;
 import infrastructure.repository.InMemoryAccountRepository;
 import infrastructure.repository.InMemoryMembroStaffRepository;
 import infrastructure.repository.InMemoryUtenteRepository;
-import application.CreateHackathonService;
 import domain.repository.HackathonRepository;
 import infrastructure.repository.InMemoryHackathonRepository;
-import application.InvitaMembriService;
-import application.CreaTeamService;
 import domain.repository.TeamRepository;
 import domain.repository.InvitoRepository;
 import infrastructure.repository.InMemoryTeamRepository;
 import infrastructure.repository.InMemoryInvitoRepository;
-import application.VisualizzaInvitiService;
-import application.UnisciTeamService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -87,5 +81,9 @@ public class AppConfig {
     @Bean
     public UnisciTeamService unisciTeamService(InvitoRepository invitoRepository, TeamRepository teamRepository) {
         return new UnisciTeamService(invitoRepository, teamRepository);
+    }
+    @Bean
+    public IscriviTeamService iscriviTeamService(HackathonRepository hackathonRepository, TeamRepository teamRepository) {
+        return new IscriviTeamService(hackathonRepository, teamRepository);
     }
 }

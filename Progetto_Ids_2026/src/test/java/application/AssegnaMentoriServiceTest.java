@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -47,9 +48,9 @@ class AssegnaMentoriServiceTest {
                 .nome("HackHub Test")
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.of(2026, 9, 1))
-                .dataFine(LocalDate.of(2026, 9, 3))
-                .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
+                .dataInizio(LocalDateTime.now().minusDays(2))
+                .dataFine(LocalDate.now().plusDays(5))
+                .scadenzaIscrizioni(LocalDate.now().minusDays(10))
                 .premio(500.0)
                 .maxTeam(10)
                 .build();
@@ -102,10 +103,10 @@ class AssegnaMentoriServiceTest {
 
     @Test
     void rifiutaSeHackathonConcluso() {
-        // Repository con Clock "congelato" al 10 settembre 2026,
-        // cioè dopo la dataFine (3 settembre) -> stato IN_VALUTAZIONE
+        // Repository con Clock "congelato" 10 giorni dopo oggi,
+        // cioè dopo la dataFine (oggi + 5 giorni) -> stato IN_VALUTAZIONE
         Clock clockFisso = Clock.fixed(
-                LocalDate.of(2026, 9, 10).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                LocalDate.now().plusDays(10).atStartOfDay(ZoneId.systemDefault()).toInstant(),
                 ZoneId.systemDefault()
         );
         HackathonRepository repoConTempoFisso = new InMemoryHackathonRepository(clockFisso);
@@ -113,9 +114,6 @@ class AssegnaMentoriServiceTest {
         AssegnaMentoriService assegnaConTempoFisso = new AssegnaMentoriService(repoConTempoFisso);
 
         Hackathon h = createConTempoFisso.execute(organizzatore, datiValidi(), giudice, List.of(mentoreIniziale));
-
-        // Non serve più chiamare aggiornaStato() a mano:
-        // ogni findById/save attraverso questo repository userà il Clock fisso.
 
         assertThrows(IllegalStateException.class, () ->
                 assegnaConTempoFisso.execute(organizzatore, h.getId(), nuovoMentore));

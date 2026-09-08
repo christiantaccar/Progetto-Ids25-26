@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import domain.models.HackathonData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * L'hackathon e' terminato: il Giudice valuta le sottomissioni.
@@ -18,7 +19,7 @@ public final class InValutazione implements StatoHackathonState {
     }
 
     @Override
-    public StatoHackathonState prossimo(HackathonData data, LocalDate oggi) {
+    public StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso) {
         // Nessuna transizione automatica: si esce da questo stato solo
         // con la proclamazione del vincitore da parte dell'Organizzatore.
         return this;

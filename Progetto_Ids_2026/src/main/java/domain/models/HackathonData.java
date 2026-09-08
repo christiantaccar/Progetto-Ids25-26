@@ -1,13 +1,14 @@
 package domain.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class HackathonData {
     private final String nome;
     private final String regolamento;
     private final String luogo;
-    private final LocalDate dataInizio;
+    private final LocalDateTime dataInizio;
     private final LocalDate dataFine;
     private final LocalDate scadenzaIscrizioni;
     private final double premio;
@@ -27,7 +28,7 @@ public class HackathonData {
     public String getNome() { return nome; }
     public String getRegolamento() { return regolamento; }
     public String getLuogo() { return luogo; }
-    public LocalDate getDataInizio() { return dataInizio; }
+    public LocalDateTime getDataInizio() { return dataInizio; }
     public LocalDate getDataFine() { return dataFine; }
     public LocalDate getScadenzaIscrizioni() { return scadenzaIscrizioni; }
     public double getPremio() { return premio; }
@@ -55,7 +56,7 @@ public class HackathonData {
         private String nome;
         private String regolamento;
         private String luogo;
-        private LocalDate dataInizio;
+        private LocalDateTime dataInizio;
         private LocalDate dataFine;
         private LocalDate scadenzaIscrizioni;
         private double premio;
@@ -76,7 +77,7 @@ public class HackathonData {
             return this;
         }
 
-        public Builder dataInizio(LocalDate dataInizio) {
+        public Builder dataInizio(LocalDateTime dataInizio) {
             this.dataInizio = dataInizio;
             return this;
         }
@@ -122,10 +123,10 @@ public class HackathonData {
             }
 
             // === VALIDAZIONE DATE ===
-            if (dataFine.isBefore(dataInizio)) {
+            if (dataFine.isBefore(dataInizio.toLocalDate())) {
                 throw new IllegalArgumentException("La data di fine non può essere prima della data di inizio");
             }
-            if (scadenzaIscrizioni.isAfter(dataInizio)) {
+            if (scadenzaIscrizioni.isAfter(dataInizio.toLocalDate())) {
                 throw new IllegalArgumentException("La scadenza iscrizioni deve essere prima dell'inizio");
             }
 

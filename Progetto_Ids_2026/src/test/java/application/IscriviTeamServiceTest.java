@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ class IscriviTeamServiceTest {
                 .nome("HackHub Test")
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.now().plusDays(30))
+                .dataInizio(LocalDateTime.now().plusDays(30))
                 .dataFine(LocalDate.now().plusDays(32))
                 .scadenzaIscrizioni(LocalDate.now().plusDays(20))
                 .premio(500.0)

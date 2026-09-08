@@ -81,7 +81,7 @@ class RispondiCallPropostaServiceTest {
                 .nome("HackHub Test")
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
-                .dataInizio(LocalDate.of(2026, 9, 1))
+                .dataInizio(LocalDateTime.of(2026, 9, 1,0,0))
                 .dataFine(LocalDate.of(2026, 9, 3))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(500.0)
@@ -111,7 +111,7 @@ class RispondiCallPropostaServiceTest {
         service.execute(capoTeam, proposta.getId(), true);
 
         assertEquals(1, notifiche.getInviate().size());
-        assertEquals("Peach", notifiche.getInviate().get(0).destinatario);
+        assertEquals("Peach", notifiche.getInviate().get(0).destinatario.getNome());
     }
 
     // ====== RIFIUTO ======

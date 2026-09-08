@@ -4,6 +4,7 @@ import domain.enums.StatoHackathon;
 import domain.models.HackathonData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Stato finale: il vincitore e' stato proclamato. Nessuna operazione consentita
@@ -17,7 +18,7 @@ public final class Concluso implements StatoHackathonState {
     }
 
     @Override
-    public StatoHackathonState prossimo(HackathonData data, LocalDate oggi) {
+    public StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso) {
         return this;
     }
 
