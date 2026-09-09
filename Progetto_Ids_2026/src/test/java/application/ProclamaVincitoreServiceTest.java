@@ -50,7 +50,7 @@ class ProclamaVincitoreServiceTest {
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
                 .dataInizio(LocalDateTime.now().plusDays(30))
-                .dataFine(LocalDate.now().plusDays(32))
+                .dataFine(LocalDateTime.now().plusDays(32))
                 .scadenzaIscrizioni(LocalDate.now().plusDays(20))
                 .premio(500.0)
                 .maxTeam(maxTeam)

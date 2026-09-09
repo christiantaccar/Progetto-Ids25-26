@@ -21,7 +21,7 @@ class SottomissioneTest {
                 .regolamento("Reg")
                 .luogo("Pesaro")
                 .dataInizio(LocalDateTime.of(2026, 9, 1,0,0))
-                .dataFine(LocalDate.of(2026, 9, 3))
+                .dataFine(LocalDateTime.of(2026, 9, 3,0,0))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(0)
                 .maxTeam(5)

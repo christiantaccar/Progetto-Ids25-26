@@ -49,7 +49,7 @@ class InviaSottomissioneServiceTest {
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
                 .dataInizio(LocalDateTime.of(2026, 9, 1,0,0))
-                .dataFine(LocalDate.of(2026, 9, 3))
+                .dataFine(LocalDateTime.of(2026, 9, 3,0,0))
                 .scadenzaIscrizioni(LocalDate.of(2026, 8, 25))
                 .premio(500.0)
                 .maxTeam(10)

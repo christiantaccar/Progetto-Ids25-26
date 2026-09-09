@@ -9,7 +9,7 @@ public class HackathonData {
     private final String regolamento;
     private final String luogo;
     private final LocalDateTime dataInizio;
-    private final LocalDate dataFine;
+    private final LocalDateTime dataFine;
     private final LocalDate scadenzaIscrizioni;
     private final double premio;
     private final int maxTeam;
@@ -29,7 +29,7 @@ public class HackathonData {
     public String getRegolamento() { return regolamento; }
     public String getLuogo() { return luogo; }
     public LocalDateTime getDataInizio() { return dataInizio; }
-    public LocalDate getDataFine() { return dataFine; }
+    public LocalDateTime getDataFine() { return dataFine; }
     public LocalDate getScadenzaIscrizioni() { return scadenzaIscrizioni; }
     public double getPremio() { return premio; }
     public int getMaxTeam() { return maxTeam; }
@@ -57,7 +57,7 @@ public class HackathonData {
         private String regolamento;
         private String luogo;
         private LocalDateTime dataInizio;
-        private LocalDate dataFine;
+        private LocalDateTime dataFine;
         private LocalDate scadenzaIscrizioni;
         private double premio;
         private int maxTeam;
@@ -82,7 +82,7 @@ public class HackathonData {
             return this;
         }
 
-        public Builder dataFine(LocalDate dataFine) {
+        public Builder dataFine(LocalDateTime dataFine) {
             this.dataFine = dataFine;
             return this;
         }
@@ -123,7 +123,7 @@ public class HackathonData {
             }
 
             // === VALIDAZIONE DATE ===
-            if (dataFine.isBefore(dataInizio.toLocalDate())) {
+            if (dataFine.isBefore(dataInizio)) {
                 throw new IllegalArgumentException("La data di fine non può essere prima della data di inizio");
             }
             if (scadenzaIscrizioni.isAfter(dataInizio.toLocalDate())) {

@@ -19,7 +19,7 @@ public final class InIscrizione implements StatoHackathonState {
 
     @Override
     public StatoHackathonState prossimo(HackathonData data, LocalDateTime adesso) {
-        if (!adesso.isBefore(data.getDataFine().atStartOfDay())) {
+        if (!adesso.isBefore(data.getDataFine())) {
             return new InValutazione();
         }
         if (!adesso.isBefore(data.getDataInizio())) {

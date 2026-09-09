@@ -13,7 +13,7 @@ public record CreaHackathonRequest(
         String regolamento,
         String luogo,
         LocalDateTime dataInizio,
-        LocalDate dataFine,
+        LocalDateTime dataFine,
         LocalDate scadenzaIscrizioni,
         double premio,
         int maxTeam) {

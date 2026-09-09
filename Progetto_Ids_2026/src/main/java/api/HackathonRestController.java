@@ -123,4 +123,11 @@ public class HackathonRestController {
                 h.getMentori().stream().map(MembroStaff::getEmail).toList()
         );
     }
+    @GetMapping("/hackathons")
+    public ResponseEntity<Object> elencoHackathon() {
+        List<HackathonResponse> elenco = hackathonRepository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
+        return ResponseEntity.ok(elenco);
+    }
 }

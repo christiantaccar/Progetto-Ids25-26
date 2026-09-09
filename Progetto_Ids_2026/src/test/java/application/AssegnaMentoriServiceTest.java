@@ -49,7 +49,7 @@ class AssegnaMentoriServiceTest {
                 .regolamento("Regolamento di prova")
                 .luogo("Pesaro")
                 .dataInizio(LocalDateTime.now().minusDays(2))
-                .dataFine(LocalDate.now().plusDays(5))
+                .dataFine(LocalDateTime.now().plusDays(5))
                 .scadenzaIscrizioni(LocalDate.now().minusDays(10))
                 .premio(500.0)
                 .maxTeam(10)
