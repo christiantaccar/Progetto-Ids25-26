@@ -16,6 +16,10 @@ import infrastructure.repository.InMemoryInvitoRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import domain.repository.SottomissioneRepository;
+import infrastructure.repository.InMemorySottomissioneRepository;
+
+
 @Configuration
 public class AppConfig {
 
@@ -85,5 +89,19 @@ public class AppConfig {
     @Bean
     public IscriviTeamService iscriviTeamService(HackathonRepository hackathonRepository, TeamRepository teamRepository) {
         return new IscriviTeamService(hackathonRepository, teamRepository);
+    }
+    @Bean
+    public SottomissioneRepository sottomissioneRepository() {
+        return new InMemorySottomissioneRepository();
+    }
+
+    @Bean
+    public InviaSottomissioneService inviaSottomissioneService(TeamRepository teamRepository,
+                                                                 SottomissioneRepository sottomissioneRepository) {
+        return new InviaSottomissioneService(teamRepository, sottomissioneRepository);
+    }
+    @Bean
+    public ValutaSottomissioneService valutaSottomissioneService(TeamRepository teamRepository) {
+        return new ValutaSottomissioneService(teamRepository);
     }
 }
