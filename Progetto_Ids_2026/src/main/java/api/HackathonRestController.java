@@ -4,6 +4,7 @@ import api.dto.CreaHackathonRequest;
 import api.dto.HackathonResponse;
 import api.dto.IscriviTeamRequest;
 import api.dto.MembroStaffResponse;
+import api.dto.AssegnaMentoreRequest;
 import application.CreateHackathonService;
 import application.IscriviTeamService;
 import application.VisualizzaHackathonService;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import api.dto.ConcludiHackathonRequest;
 import api.dto.ConclusioneResponse;
+import application.AssegnaMentoriService;
 import application.ConcludiHackathonService;
 import domain.repository.TeamRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,17 +41,19 @@ public class HackathonRestController {
 
     private final CreateHackathonService createHackathonService;
     private final IscriviTeamService iscriviTeamService;
-    private final ConcludiHackathonService concludiHackathonService;   // ← nuovo
+    private final ConcludiHackathonService concludiHackathonService;   
     private final MembroStaffRepository membroStaffRepository;
     private final HackathonRepository hackathonRepository;
     private final UtenteRepository utenteRepository;
-    private final TeamRepository teamRepository;                       // ← nuovo
+    private final TeamRepository teamRepository;                       
     private final VisualizzaHackathonService visualizzaHackathonService;
+    private final AssegnaMentoriService assegnaMentoriService ;
 
     public HackathonRestController(CreateHackathonService createHackathonService,
                                    IscriviTeamService iscriviTeamService,
                                    ConcludiHackathonService concludiHackathonService,
                                    VisualizzaHackathonService visualizzaHackathonService,
+                                    AssegnaMentoriService assegnaMentoriService,  
                                    MembroStaffRepository membroStaffRepository,
                                    HackathonRepository hackathonRepository,
                                    UtenteRepository utenteRepository,
@@ -58,6 +62,7 @@ public class HackathonRestController {
         this.iscriviTeamService = iscriviTeamService;
         this.concludiHackathonService = concludiHackathonService;
         this.visualizzaHackathonService = visualizzaHackathonService;
+        this.assegnaMentoriService = assegnaMentoriService; 
         this.membroStaffRepository = membroStaffRepository;
         this.hackathonRepository = hackathonRepository;
         this.utenteRepository = utenteRepository;
@@ -181,4 +186,21 @@ public class HackathonRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Non trovato: " + e.getMessage());
         }
     }
+    @PostMapping("/hackathon/mentori")
+public ResponseEntity<Object> assegnaMentore(@RequestBody AssegnaMentoreRequest req) {
+    try {
+        MembroStaff organizzatore = trovaStaff(req.organizzatoreId());
+        MembroStaff mentore = trovaStaff(req.mentoreId());
+
+        assegnaMentoriService.execute(organizzatore, req.hackathonId(), mentore);
+
+        return hackathonRepository.findById(req.hackathonId())
+                .map(h -> ResponseEntity.ok((Object) toResponse(h)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hackathon non trovato: " + req.hackathonId()));
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Membro dello staff non trovato: " + e.getMessage());
+    }
+}
 }

@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import api.dto.EspelliComponenteRequest;
+import api.dto.LasciaTeamRequest;
+import api.dto.LasciaTeamResponse;
+import application.EspellereComponenteService;
+import application.LasciareTeamService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,17 +39,24 @@ public class TeamRestController {
     private final UtenteRepository utenteRepository;
     private final TeamRepository teamRepository;
 
-    public TeamRestController(CreaTeamService creaTeamService,
-                              VisualizzaInvitiService visualizzaInvitiService,
-                              UnisciTeamService unisciTeamService,
-                              UtenteRepository utenteRepository,
-                              TeamRepository teamRepository) {
-        this.creaTeamService = creaTeamService;
-        this.visualizzaInvitiService = visualizzaInvitiService;
-        this.unisciTeamService = unisciTeamService;
-        this.utenteRepository = utenteRepository;
-        this.teamRepository= teamRepository;
-    }
+    private final EspellereComponenteService espellereComponenteService;
+    private final LasciareTeamService lasciareTeamService;
+
+public TeamRestController(CreaTeamService creaTeamService,
+                          VisualizzaInvitiService visualizzaInvitiService,
+                          UnisciTeamService unisciTeamService,
+                          EspellereComponenteService espellereComponenteService,   
+                          LasciareTeamService lasciareTeamService,                 
+                          UtenteRepository utenteRepository,
+                          TeamRepository teamRepository) {
+    this.creaTeamService = creaTeamService;
+    this.visualizzaInvitiService = visualizzaInvitiService;
+    this.unisciTeamService = unisciTeamService;
+    this.espellereComponenteService = espellereComponenteService;                
+    this.lasciareTeamService = lasciareTeamService;                               
+    this.utenteRepository = utenteRepository;
+    this.teamRepository = teamRepository;
+}
 
     @PostMapping("/team")
     public ResponseEntity<Object> creaTeam(@RequestBody CreaTeamRequest req) {
@@ -133,5 +145,54 @@ public class TeamRestController {
                 ))
                 .toList();
         return ResponseEntity.ok(elenco);
+    }
+    @PostMapping("/team/espelli")
+    public ResponseEntity<Object> espelliComponente(@RequestBody EspelliComponenteRequest req) {
+        try {
+            Utente capo = trovaUtente(req.capoId());
+            Utente componente = trovaUtente(req.componenteId());
+            Team team = teamRepository.findById(req.teamId())
+                    .orElseThrow(() -> new NoSuchElementException(req.teamId().toString()));
+
+            espellereComponenteService.execute(capo, team, componente);
+
+            Team aggiornato = teamRepository.findById(req.teamId())
+                    .orElseThrow(() -> new NoSuchElementException(req.teamId().toString()));
+            return ResponseEntity.ok(new TeamResponse(
+                    aggiornato.getId(),
+                    aggiornato.getNome(),
+                    aggiornato.getCapoTeam().getEmail(),
+                    aggiornato.getMembri().stream().map(Utente::getEmail).toList(),
+                    List.of()
+            ));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Non trovato: " + e.getMessage());
+        }
+    }
+
+@PostMapping("/team/lascia")
+    public ResponseEntity<Object> lasciaTeam(@RequestBody LasciaTeamRequest req) {
+        try {
+                Utente utente = trovaUtente(req.utenteId());
+                Team teamPrimaDiUscire = utente.getTeamAttuale();
+
+                Utente nuovoCapo = lasciareTeamService.execute(utente);
+
+                if (nuovoCapo != null) {
+                        return ResponseEntity.ok(new LasciaTeamResponse(
+                                false, nuovoCapo.getEmail(), "Nuovo capo team eletto"));
+                }
+                boolean teamSciolto = teamPrimaDiUscire != null
+                        && teamRepository.findById(teamPrimaDiUscire.getId()).isEmpty();
+                return ResponseEntity.ok(new LasciaTeamResponse(
+                        teamSciolto, null,
+                        teamSciolto ? "Team sciolto" : "Utente rimosso dal team"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utente non trovato: " + e.getMessage());
+        }
     }
 }

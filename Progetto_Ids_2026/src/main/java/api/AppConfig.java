@@ -123,4 +123,17 @@ public class AppConfig {
     public VisualizzaSottomissioniService visualizzaSottomissioniService(HackathonRepository hackathonRepository) {
         return new VisualizzaSottomissioniService(hackathonRepository);
     }
+    @Bean
+    public AssegnaMentoriService assegnaMentoriService(HackathonRepository hackathonRepository) {
+    return new AssegnaMentoriService(hackathonRepository);
+    }
+    @Bean
+    public EspellereComponenteService espellereComponenteService(TeamRepository teamRepository) {
+        return new EspellereComponenteService(teamRepository);
+    }
+
+    @Bean
+    public LasciareTeamService lasciareTeamService(TeamRepository teamRepository) {
+        return new LasciareTeamService(teamRepository);
+    }
 }
