@@ -6,14 +6,20 @@ import api.dto.IscriviTeamRequest;
 import api.dto.MembroStaffResponse;
 import application.CreateHackathonService;
 import application.IscriviTeamService;
+import application.VisualizzaHackathonService;
 import domain.models.Hackathon;
 import domain.models.MembroStaff;
+import domain.models.Team;
 import domain.models.Utente;
 import domain.repository.HackathonRepository;
 import domain.repository.MembroStaffRepository;
 import domain.repository.UtenteRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import api.dto.ConcludiHackathonRequest;
+import api.dto.ConclusioneResponse;
+import application.ConcludiHackathonService;
+import domain.repository.TeamRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,20 +39,29 @@ public class HackathonRestController {
 
     private final CreateHackathonService createHackathonService;
     private final IscriviTeamService iscriviTeamService;
+    private final ConcludiHackathonService concludiHackathonService;   // ← nuovo
     private final MembroStaffRepository membroStaffRepository;
     private final HackathonRepository hackathonRepository;
     private final UtenteRepository utenteRepository;
+    private final TeamRepository teamRepository;                       // ← nuovo
+    private final VisualizzaHackathonService visualizzaHackathonService;
 
     public HackathonRestController(CreateHackathonService createHackathonService,
                                    IscriviTeamService iscriviTeamService,
+                                   ConcludiHackathonService concludiHackathonService,
+                                   VisualizzaHackathonService visualizzaHackathonService,
                                    MembroStaffRepository membroStaffRepository,
                                    HackathonRepository hackathonRepository,
-                                   UtenteRepository utenteRepository) {
+                                   UtenteRepository utenteRepository,
+                                   TeamRepository teamRepository) {
         this.createHackathonService = createHackathonService;
         this.iscriviTeamService = iscriviTeamService;
+        this.concludiHackathonService = concludiHackathonService;
+        this.visualizzaHackathonService = visualizzaHackathonService;
         this.membroStaffRepository = membroStaffRepository;
         this.hackathonRepository = hackathonRepository;
         this.utenteRepository = utenteRepository;
+        this.teamRepository = teamRepository;
     }
 
     @PostMapping("/hackathon")
@@ -125,9 +140,45 @@ public class HackathonRestController {
     }
     @GetMapping("/hackathons")
     public ResponseEntity<Object> elencoHackathon() {
-        List<HackathonResponse> elenco = hackathonRepository.findAll().stream()
+        List<HackathonResponse> elenco = visualizzaHackathonService.execute().stream()
                 .map(this::toResponse)
                 .toList();
         return ResponseEntity.ok(elenco);
+    }
+    @PostMapping("/hackathon/concludi")
+    public ResponseEntity<Object> concludiHackathon(@RequestBody ConcludiHackathonRequest req) {
+        try {
+            MembroStaff richiedente = membroStaffRepository.findById(req.richiedenteId())
+                    .orElseThrow(() -> new NoSuchElementException(req.richiedenteId().toString()));
+
+            Team teamScelto = null;
+            if (req.teamSceltoId() != null) {
+                teamScelto = teamRepository.findById(req.teamSceltoId())
+                        .orElseThrow(() -> new NoSuchElementException(req.teamSceltoId().toString()));
+            }
+
+            ConcludiHackathonService.RisultatoConclusione risultato =
+                    concludiHackathonService.execute(richiedente, req.hackathonId(), teamScelto);
+
+            if (risultato.richiedeSceltaGiudice) {
+                return ResponseEntity.ok(new ConclusioneResponse(
+                        req.hackathonId(), null, true,
+                        risultato.candidatiInParita.stream().map(Team::getNome).toList(),
+                        null
+                ));
+            }
+
+            return ResponseEntity.ok(new ConclusioneResponse(
+                    risultato.hackathon.getId(),
+                    risultato.hackathon.getStato().name(),
+                    false,
+                    List.of(),
+                    risultato.hackathon.getTeamVincitore().getNome()
+            ));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Non trovato: " + e.getMessage());
+        }
     }
 }

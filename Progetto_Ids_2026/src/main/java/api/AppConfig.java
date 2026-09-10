@@ -104,4 +104,23 @@ public class AppConfig {
     public ValutaSottomissioneService valutaSottomissioneService(TeamRepository teamRepository) {
         return new ValutaSottomissioneService(teamRepository);
     }
+    @Bean
+    public ProclamaVincitoreService proclamaVincitoreService(HackathonRepository hackathonRepository) {
+        return new ProclamaVincitoreService(hackathonRepository);
+    }
+
+    @Bean
+    public ConcludiHackathonService concludiHackathonService(HackathonRepository hackathonRepository,
+                                                             ProclamaVincitoreService proclamaVincitoreService) {
+        return new ConcludiHackathonService(hackathonRepository, proclamaVincitoreService);
+    }
+    @Bean
+    public VisualizzaHackathonService visualizzaHackathonService(HackathonRepository hackathonRepository) {
+        return new VisualizzaHackathonService(hackathonRepository);
+    }
+
+    @Bean
+    public VisualizzaSottomissioniService visualizzaSottomissioniService(HackathonRepository hackathonRepository) {
+        return new VisualizzaSottomissioniService(hackathonRepository);
+    }
 }
