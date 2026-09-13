@@ -1,23 +1,16 @@
 package api;
 
 import application.*;
-import domain.repository.AccountRepository;
-import domain.repository.MembroStaffRepository;
-import domain.repository.UtenteRepository;
-import infrastructure.repository.InMemoryAccountRepository;
-import infrastructure.repository.InMemoryMembroStaffRepository;
-import infrastructure.repository.InMemoryUtenteRepository;
-import domain.repository.HackathonRepository;
-import infrastructure.repository.InMemoryHackathonRepository;
-import domain.repository.TeamRepository;
-import domain.repository.InvitoRepository;
-import infrastructure.repository.InMemoryTeamRepository;
-import infrastructure.repository.InMemoryInvitoRepository;
+import application.observer.CalendarioObserver;
+import application.observer.NotificaControparteObserver;
+import domain.port.CalendarioService;
+import domain.port.ServizioNotifiche;
+import domain.repository.*;
+import infrastructure.calendar.CalendarioSimulato;
+import infrastructure.notifica.NotificheInMemory;
+import infrastructure.repository.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import domain.repository.SottomissioneRepository;
-import infrastructure.repository.InMemorySottomissioneRepository;
 
 
 @Configuration
@@ -135,5 +128,47 @@ public class AppConfig {
     @Bean
     public LasciareTeamService lasciareTeamService(TeamRepository teamRepository) {
         return new LasciareTeamService(teamRepository);
+    }
+
+    @Bean
+    public InvitaAltriUtentiService invitaAltriUtentiService(TeamRepository teamRepository,
+                                                             InvitaMembriService invitaMembriService) {
+        return new InvitaAltriUtentiService(teamRepository, invitaMembriService);
+    }
+    @Bean
+    public CallPropostaRepository callPropostaRepository() {
+        return new InMemoryCallPropostaRepository();
+    }
+
+    @Bean
+    public CalendarioService calendarioService() {
+        return new CalendarioSimulato();
+    }
+
+    @Bean
+    public ServizioNotifiche servizioNotifiche() {
+        return new NotificheInMemory();
+    }
+
+    @Bean
+    public GestoreNotificheCall gestoreNotificheCall(CalendarioService calendarioService,
+                                                     ServizioNotifiche servizioNotifiche) {
+        GestoreNotificheCall gestore = new GestoreNotificheCall();
+        gestore.registra(new CalendarioObserver(calendarioService));
+        gestore.registra(new NotificaControparteObserver(servizioNotifiche));
+        return gestore;
+    }
+
+    @Bean
+    public ProponiCallService proponiCallService(TeamRepository teamRepository,
+                                                 CallPropostaRepository callPropostaRepository,
+                                                 GestoreNotificheCall gestoreNotificheCall) {
+        return new ProponiCallService(teamRepository, callPropostaRepository, gestoreNotificheCall);
+    }
+
+    @Bean
+    public RispondiCallPropostaService rispondiCallPropostaService(CallPropostaRepository callPropostaRepository,
+                                                                   GestoreNotificheCall gestoreNotificheCall) {
+        return new RispondiCallPropostaService(callPropostaRepository, gestoreNotificheCall);
     }
 }

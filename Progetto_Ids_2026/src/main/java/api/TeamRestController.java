@@ -1,12 +1,7 @@
 package api;
 
-import api.dto.AccettaInvitoRequest;
-import api.dto.CreaTeamRequest;
-import api.dto.InvitoResponse;
-import api.dto.TeamResponse;
-import application.CreaTeamService;
-import application.UnisciTeamService;
-import application.VisualizzaInvitiService;
+import api.dto.*;
+import application.*;
 import domain.models.Team;
 import domain.models.Utente;
 import domain.repository.TeamRepository;
@@ -19,11 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import api.dto.EspelliComponenteRequest;
-import api.dto.LasciaTeamRequest;
-import api.dto.LasciaTeamResponse;
-import application.EspellereComponenteService;
-import application.LasciareTeamService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,25 +28,27 @@ public class TeamRestController {
     private final UnisciTeamService unisciTeamService;
     private final UtenteRepository utenteRepository;
     private final TeamRepository teamRepository;
-
     private final EspellereComponenteService espellereComponenteService;
     private final LasciareTeamService lasciareTeamService;
+    private final InvitaAltriUtentiService invitaAltriUtentiService;
 
-public TeamRestController(CreaTeamService creaTeamService,
-                          VisualizzaInvitiService visualizzaInvitiService,
-                          UnisciTeamService unisciTeamService,
-                          EspellereComponenteService espellereComponenteService,   
-                          LasciareTeamService lasciareTeamService,                 
-                          UtenteRepository utenteRepository,
-                          TeamRepository teamRepository) {
-    this.creaTeamService = creaTeamService;
-    this.visualizzaInvitiService = visualizzaInvitiService;
-    this.unisciTeamService = unisciTeamService;
-    this.espellereComponenteService = espellereComponenteService;                
-    this.lasciareTeamService = lasciareTeamService;                               
-    this.utenteRepository = utenteRepository;
-    this.teamRepository = teamRepository;
-}
+    public TeamRestController(CreaTeamService creaTeamService,
+                              VisualizzaInvitiService visualizzaInvitiService,
+                              UnisciTeamService unisciTeamService,
+                              EspellereComponenteService espellereComponenteService,
+                              LasciareTeamService lasciareTeamService,
+                              InvitaAltriUtentiService invitaAltriUtentiService,
+                              UtenteRepository utenteRepository,
+                              TeamRepository teamRepository) {
+        this.creaTeamService = creaTeamService;
+        this.visualizzaInvitiService = visualizzaInvitiService;
+        this.unisciTeamService = unisciTeamService;
+        this.espellereComponenteService = espellereComponenteService;
+        this.lasciareTeamService = lasciareTeamService;
+        this.invitaAltriUtentiService = invitaAltriUtentiService;
+        this.utenteRepository = utenteRepository;
+        this.teamRepository = teamRepository;
+    }
 
     @PostMapping("/team")
     public ResponseEntity<Object> creaTeam(@RequestBody CreaTeamRequest req) {
@@ -189,6 +181,29 @@ public TeamRestController(CreaTeamService creaTeamService,
                 return ResponseEntity.ok(new LasciaTeamResponse(
                         teamSciolto, null,
                         teamSciolto ? "Team sciolto" : "Utente rimosso dal team"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utente non trovato: " + e.getMessage());
+        }
+    }
+    @PostMapping("/team/invita")
+    public ResponseEntity<Object> invitaAltriUtenti(@RequestBody InvitaAltriRequest req) {
+        try {
+            Utente richiedente = trovaUtente(req.richiedenteId());
+            List<Utente> invitati = req.invitatiIds() == null
+                    ? List.of()
+                    : req.invitatiIds().stream().map(this::trovaUtente).toList();
+
+            InvitaMembriService.RisultatoInviti risultato =
+                    invitaAltriUtentiService.execute(richiedente, req.teamId(), invitati);
+
+            List<String> creati = risultato.creati.stream()
+                    .map(inv -> inv.getDestinatario().getEmail()).toList();
+            List<String> esclusi = risultato.esclusi.stream()
+                    .map(Utente::getEmail).toList();
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(new InvitaAltriResponse(creati, esclusi));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (NoSuchElementException e) {
